@@ -109,15 +109,20 @@ export class Vpc extends ComponentResource implements VpcOutputs {
         })).names;
 
         // Public Subnets
+        let azCounts: { [key: string]: number; } = {};
         const publicSubnets = (await distributor.publicSubnets()).map((cidr, index) => {
             const subnetTags = Object.assign({
                 Name: `${inputs.description} Public ${index + 1}`,
             }, inputs.baseTags);
-            return new aws.ec2.Subnet(`${baseName}-public-${index + 1}`, {
+            const azName = azNames[index % azNames.length];
+            const az = azName.charAt(azName.length - 1);
+            const azIndex = azCounts[az] || 1;
+            azCounts[az] = azIndex + 1;
+            return new aws.ec2.Subnet(`${baseName}-public-${az}-${azIndex}`, {
                 vpcId: vpc.id,
                 cidrBlock: cidr,
                 mapPublicIpOnLaunch: true,
-                availabilityZone: azNames[index],
+                availabilityZone: azName,
                 tags: subnetTags,
             }, vpcParent);
         });
@@ -154,15 +159,20 @@ export class Vpc extends ComponentResource implements VpcOutputs {
         });
 
         // Private Subnets
+        azCounts = {};
         const privateSubnets = (await distributor.privateSubnets()).map((cidr, index) => {
             const subnetTags = Object.assign({
                 Name: `${inputs.description} Private ${index + 1}`,
             }, inputs.baseTags);
-            return new aws.ec2.Subnet(`${baseName}-private-${index + 1}`, {
+            const azName = azNames[index % azNames.length];
+            const az = azName.charAt(azName.length - 1);
+            const azIndex = azCounts[az] || 1;
+            azCounts[az] = azIndex + 1;
+            return new aws.ec2.Subnet(`${baseName}-private-${az}-${azIndex}`, {
                 vpcId: vpc.id,
                 cidrBlock: cidr,
                 mapPublicIpOnLaunch: false,
-                availabilityZone: azNames[index],
+                availabilityZone: azName,
                 tags: subnetTags,
             }, vpcParent);
         });
