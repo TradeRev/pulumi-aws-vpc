@@ -12,7 +12,7 @@ export declare class SubnetDistributor {
      * @param {string} baseCidr The CIDR block on which to base subnet CIDRs
      * @returns {Promise<SubnetDistributor>} A SubnetDistributor instance.
      */
-    static perAz(baseCidr: string): Promise<SubnetDistributor>;
+    static perAz(baseCidr: string, perAz: number): Promise<SubnetDistributor>;
     /**
      * Returns a subnet distributor configured to split the baseCidr into a fixed
      * number of public/private subnet pairs.
@@ -20,7 +20,7 @@ export declare class SubnetDistributor {
      * @param {number} azCount The number of subnet pairs to produce.
      * @returns {SubnetDistributor} A SubnetDistributor instance.
      */
-    static fixedCount(baseCidr: string, azCount: number): SubnetDistributor;
+    static fixedCount(baseCidr: string, azCount: number, perAz: number): SubnetDistributor;
     /**
      * Returns an array of the CIDR blocks for the private subnets.
      * @returns {Promise<string[]>}

@@ -24,12 +24,12 @@ export class SubnetDistributor {
      * @param {string} baseCidr The CIDR block on which to base subnet CIDRs
      * @returns {Promise<SubnetDistributor>} A SubnetDistributor instance.
      */
-    public static async perAz(baseCidr: string): Promise<SubnetDistributor> {
+    public static async perAz(baseCidr: string, perAz: number): Promise<SubnetDistributor> {
         const azCount = (await aws.getAvailabilityZones({
             state: "available",
         })).names.length;
 
-        return new SubnetDistributor(baseCidr, azCount);
+        return new SubnetDistributor(baseCidr, azCount * perAz);
     }
 
     /**
@@ -39,8 +39,8 @@ export class SubnetDistributor {
      * @param {number} azCount The number of subnet pairs to produce.
      * @returns {SubnetDistributor} A SubnetDistributor instance.
      */
-    public static fixedCount(baseCidr: string, azCount: number): SubnetDistributor {
-        return new SubnetDistributor(baseCidr, azCount);
+    public static fixedCount(baseCidr: string, azCount: number, perAz: number): SubnetDistributor {
+        return new SubnetDistributor(baseCidr, azCount * perAz);
     }
 
     /** @internal */

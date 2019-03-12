@@ -70,11 +70,12 @@ class Vpc extends pulumi_1.ComponentResource {
             }, vpcParent);
             // Subnet Distributor
             let distributor;
+            const perAZ = inputs.perAZ || 1;
             if (typeof inputs.azCount === "number") {
-                distributor = subnetDistributor_1.SubnetDistributor.fixedCount(inputs.baseCidr, inputs.azCount);
+                distributor = subnetDistributor_1.SubnetDistributor.fixedCount(inputs.baseCidr, inputs.azCount, perAZ);
             }
             else {
-                distributor = yield subnetDistributor_1.SubnetDistributor.perAz(inputs.baseCidr);
+                distributor = yield subnetDistributor_1.SubnetDistributor.perAz(inputs.baseCidr, perAZ);
             }
             // Find AZ names
             const azNames = (yield aws.getAvailabilityZones({

@@ -17,6 +17,8 @@ export interface VpcInputs {
     baseCidr: string;
     azCount: number | "PerAZ";
 
+    perAZ: number;
+
     createS3Endpoint?: boolean;
     createDynamoDbEndpoint?: boolean;
     enableFlowLogs?: boolean;
@@ -94,10 +96,11 @@ export class Vpc extends ComponentResource implements VpcOutputs {
 
         // Subnet Distributor
         let distributor: SubnetDistributor;
+        const perAZ = inputs.perAZ || 1;
         if (typeof inputs.azCount === "number") {
-            distributor = SubnetDistributor.fixedCount(inputs.baseCidr, inputs.azCount);
+            distributor = SubnetDistributor.fixedCount(inputs.baseCidr, inputs.azCount, perAZ);
         } else {
-            distributor = await SubnetDistributor.perAz(inputs.baseCidr);
+            distributor = await SubnetDistributor.perAz(inputs.baseCidr, perAZ);
         }
 
         // Find AZ names
