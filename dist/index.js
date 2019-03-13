@@ -84,14 +84,15 @@ class Vpc extends pulumi_1.ComponentResource {
             // Public Subnets
             let azCounts = {};
             const publicSubnets = (yield distributor.publicSubnets()).map((cidr, index) => {
-                const subnetTags = Object.assign({
-                    Name: `${inputs.description} Public ${index + 1}`,
-                }, inputs.baseTags);
                 const azName = azNames[index % azNames.length];
                 const az = azName.charAt(azName.length - 1);
                 const azIndex = azCounts[az] || 1;
                 azCounts[az] = azIndex + 1;
-                return new aws.ec2.Subnet(`${baseName}-public-${az}-${azIndex}`, {
+                const subnetName = `${baseName}-public-${az}-${azIndex}`;
+                const subnetTags = Object.assign({
+                    Name: subnetName,
+                }, inputs.baseTags);
+                return new aws.ec2.Subnet(subnetName, {
                     vpcId: vpc.id,
                     cidrBlock: cidr,
                     mapPublicIpOnLaunch: true,
@@ -128,14 +129,15 @@ class Vpc extends pulumi_1.ComponentResource {
             // Private Subnets
             azCounts = {};
             const privateSubnets = (yield distributor.privateSubnets()).map((cidr, index) => {
-                const subnetTags = Object.assign({
-                    Name: `${inputs.description} Private ${index + 1}`,
-                }, inputs.baseTags);
                 const azName = azNames[index % azNames.length];
                 const az = azName.charAt(azName.length - 1);
                 const azIndex = azCounts[az] || 1;
                 azCounts[az] = azIndex + 1;
-                return new aws.ec2.Subnet(`${baseName}-private-${az}-${azIndex}`, {
+                const subnetName = `${baseName}-private-${az}-${azIndex}`;
+                const subnetTags = Object.assign({
+                    Name: subnetName,
+                }, inputs.baseTags);
+                return new aws.ec2.Subnet(subnetName, {
                     vpcId: vpc.id,
                     cidrBlock: cidr,
                     mapPublicIpOnLaunch: false,
