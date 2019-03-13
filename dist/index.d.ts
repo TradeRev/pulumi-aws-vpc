@@ -5,6 +5,7 @@ export interface VpcInputs {
     baseTags: aws.Tags;
     baseCidr: string;
     azCount: number | "PerAZ";
+    maxSubnets?: number;
     perAZ: number;
     createS3Endpoint?: boolean;
     createDynamoDbEndpoint?: boolean;

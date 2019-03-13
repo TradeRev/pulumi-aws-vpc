@@ -16,6 +16,7 @@ export interface VpcInputs {
 
     baseCidr: string;
     azCount: number | "PerAZ";
+    maxSubnets?: number;
 
     perAZ: number;
 
@@ -106,11 +107,11 @@ export class Vpc extends ComponentResource implements VpcOutputs {
         // Find AZ names
         const azNames = (await aws.getAvailabilityZones({
             state: "available",
-        })).names;
+        })).names.flatMap((n) => new Array(perAZ).fill(n));
 
         // Public Subnets
         let azCounts: { [key: string]: number; } = {};
-        const publicSubnets = (await distributor.publicSubnets()).map((cidr, index) => {
+        const publicSubnets = (await distributor.publicSubnets()).slice(0, inputs.maxSubnets).map((cidr, index) => {
             const azName = azNames[index % azNames.length];
             const az = azName.charAt(azName.length - 1);
             const azIndex = azCounts[az] || 1;
@@ -161,7 +162,7 @@ export class Vpc extends ComponentResource implements VpcOutputs {
 
         // Private Subnets
         azCounts = {};
-        const privateSubnets = (await distributor.privateSubnets()).map((cidr, index) => {
+        const privateSubnets = (await distributor.privateSubnets()).slice(0, inputs.maxSubnets).map((cidr, index) => {
             const azName = azNames[index % azNames.length];
             const az = azName.charAt(azName.length - 1);
             const azIndex = azCounts[az] || 1;

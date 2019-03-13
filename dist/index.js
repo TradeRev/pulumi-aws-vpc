@@ -80,10 +80,10 @@ class Vpc extends pulumi_1.ComponentResource {
             // Find AZ names
             const azNames = (yield aws.getAvailabilityZones({
                 state: "available",
-            })).names;
+            })).names.flatMap((n) => new Array(perAZ).fill(n));
             // Public Subnets
             let azCounts = {};
-            const publicSubnets = (yield distributor.publicSubnets()).map((cidr, index) => {
+            const publicSubnets = (yield distributor.publicSubnets()).slice(0, inputs.maxSubnets).map((cidr, index) => {
                 const azName = azNames[index % azNames.length];
                 const az = azName.charAt(azName.length - 1);
                 const azIndex = azCounts[az] || 1;
@@ -128,7 +128,7 @@ class Vpc extends pulumi_1.ComponentResource {
             }));
             // Private Subnets
             azCounts = {};
-            const privateSubnets = (yield distributor.privateSubnets()).map((cidr, index) => {
+            const privateSubnets = (yield distributor.privateSubnets()).slice(0, inputs.maxSubnets).map((cidr, index) => {
                 const azName = azNames[index % azNames.length];
                 const az = azName.charAt(azName.length - 1);
                 const azIndex = azCounts[az] || 1;

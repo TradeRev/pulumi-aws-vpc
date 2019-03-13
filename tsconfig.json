@@ -12,10 +12,11 @@
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"forceConsistentCasingInFileNames": true,
-		"strictNullChecks": true
+		"strictNullChecks": true,
+		"lib": ["es6", "esnext.array"]
 	},
 	"files": [
 		"src/index.ts"
-	]
+	], 
 }
 
