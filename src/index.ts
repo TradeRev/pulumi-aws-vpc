@@ -107,7 +107,7 @@ export class Vpc extends ComponentResource implements VpcOutputs {
         // Find AZ names
         const azNames = (await aws.getAvailabilityZones({
             state: "available",
-        })).names.flatMap((n) => new Array(perAZ).fill(n));
+        })).names.map((n) => new Array<string>(perAZ).fill(n)).reduce((a, b) => a.concat(b), []);
 
         // Public Subnets
         let azCounts: { [key: string]: number; } = {};
