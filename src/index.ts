@@ -104,10 +104,13 @@ export class Vpc extends ComponentResource implements VpcOutputs {
             distributor = await SubnetDistributor.perAz(inputs.baseCidr, perAZ);
         }
 
+        const repeat = <T>(arr: T[], repeats: number) =>
+            new Array<T>().concat(...new Array(repeats).fill(arr));
+
         // Find AZ names
-        const azNames = (await aws.getAvailabilityZones({
+        const azNames = repeat((await aws.getAvailabilityZones({
             state: "available",
-        })).names.map((n) => new Array<string>(perAZ).fill(n)).reduce((a, b) => a.concat(b), []);
+        })).names, perAZ);
 
         // Public Subnets
         let azCounts: { [key: string]: number; } = {};
