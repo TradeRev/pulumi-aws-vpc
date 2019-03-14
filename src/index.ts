@@ -198,6 +198,7 @@ export class Vpc extends ComponentResource implements VpcOutputs {
 
             // Elastic IP
             const eip = new aws.ec2.Eip(`${baseName}-nat-eip-${index + 1}`, {
+                vpc: true,
                 // TODO: this is a workaround for terraform error
                 // tags: eipTags,
             }, subnetParent);
@@ -207,7 +208,7 @@ export class Vpc extends ComponentResource implements VpcOutputs {
                 Name: `${inputs.description} NAT GW ${index + 1}`,
             }, inputs.baseTags);
             const natGateway = new aws.ec2.NatGateway(`${baseName}-nat-gw-${index + 1}`, {
-                allocationId: eip.id.apply((_id) => aws.ec2.Eip.get(`created-eip-${index + 1}`, _id).allocationId),
+                allocationId: eip.id,
                 subnetId: publicSubnets[index].id,
                 tags: natGatewayTags,
             }, subnetParent);
