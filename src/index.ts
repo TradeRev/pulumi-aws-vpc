@@ -207,7 +207,7 @@ export class Vpc extends ComponentResource implements VpcOutputs {
                 Name: `${inputs.description} NAT GW ${index + 1}`,
             }, inputs.baseTags);
             const natGateway = new aws.ec2.NatGateway(`${baseName}-nat-gw-${index + 1}`, {
-                allocationId: eip.id,
+                allocationId: eip.id.apply((_id) => aws.ec2.Eip.get(`created-eip-${index + 1}`, _id).allocationId),
                 subnetId: publicSubnets[index].id,
                 tags: natGatewayTags,
             }, subnetParent);
